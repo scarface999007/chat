@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="743.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+   <children>
+      <Pane layoutY="32.0" prefHeight="738.0" prefWidth="300.0" style="-fx-background-color: #424242;">
+         <children>
+            <ListView fx:id="listViewContact" layoutX="16.0" layoutY="14.0" prefHeight="708.0" prefWidth="269.0" />
+         </children>
+      </Pane>
+      <Pane layoutX="300.0" layoutY="32.0" prefHeight="738.0" prefWidth="443.0">
+         <children>
+            <ListView fx:id="listViewMessage" layoutX="14.0" layoutY="14.0" prefHeight="643.0" prefWidth="416.0" />
+            <TextField fx:id="textField" layoutX="14.0" layoutY="670.0" onKeyPressed="#keyPressed" prefHeight="46.0" prefWidth="279.0" />
+            <Button layoutX="302.0" layoutY="670.0" mnemonicParsing="false" onAction="#send" prefHeight="46.0" prefWidth="128.0" text="Отправить" />
+         </children>
+      </Pane>
+      <Button fx:id="closeButton" onAction="#closeButtonAction" layoutX="702.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="27.0" text="X" />
+   </children>
+</AnchorPane>
