@@ -1,5 +1,6 @@
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ public class MyServer {
     private static final int PORT = 8189;
     private List<ClientHandler> clients;
     private AuthService authService;
+    private DataBase dataBase;
 
     public ArrayList<String> getClientsName(){
         ArrayList<String> names = new ArrayList<>();
@@ -20,9 +22,10 @@ public class MyServer {
         return authService;
     }
 
-    MyServer(){
+    MyServer(DataBase dataBase){
+        this.dataBase = dataBase;
         try(ServerSocket serverSocket = new ServerSocket(PORT)){
-            authService = new BaseAuthService();
+            authService = new BaseAuthService(dataBase);
             authService.start();
             clients = new ArrayList<>();
             while (true){
