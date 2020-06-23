@@ -9,12 +9,17 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        //Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        //Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("login.fxml"));
+        Parent root = loader.load();
         primaryStage.setTitle("Messenger");
-        //primaryStage.initStyle(StageStyle.UNDECORATED);
-        //primaryStage.setScene(new Scene(root, 743, 738));
-        primaryStage.setScene(new Scene(root, 743, 767));
+
+        primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
+        ControllerLogin controllerLogin = loader.getController();
+        primaryStage.setOnCloseRequest(controllerLogin.getCloseEventHandler());
     }
 
 

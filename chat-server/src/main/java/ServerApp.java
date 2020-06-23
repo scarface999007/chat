@@ -1,5 +1,7 @@
 public class ServerApp {
+    private DataBase dataBase;
     public static void main(String[] args) {
-        new MyServer();
+        DataBase dataBase = DataBase.getInstance();
+        new MyServer(dataBase);
     }
 }

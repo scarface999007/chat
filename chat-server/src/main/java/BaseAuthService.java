@@ -1,8 +1,9 @@
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BaseAuthService implements AuthService {
-    private class Entry{
+    /*private class Entry{
         private String login;
         private String pass;
         private String nick;
@@ -12,15 +13,18 @@ public class BaseAuthService implements AuthService {
             this.pass = pass;
             this.nick = nick;
         }
+    }*/
+
+    private List<DataBaseEntity> entityList;
+    private DataBase dataBase;
+
+    BaseAuthService(DataBase dataBase){
+        this.dataBase = dataBase;
+        entityList = new ArrayList<>();
     }
 
-    private List<Entry> entryList;
-
-    BaseAuthService(){
-        entryList = new ArrayList<>();
-        entryList.add(new Entry("login1", "pass1", "nick1"));
-        entryList.add(new Entry("login2", "pass2", "nick2"));
-        entryList.add(new Entry("login3", "pass3", "nick3"));
+    private void addEntryFromDB(String login, String password) throws SQLException {
+        entityList.add(dataBase.getEntry(login, password));
     }
 
     @Override
@@ -29,9 +33,10 @@ public class BaseAuthService implements AuthService {
     }
 
     @Override
-    public String getNickByLoginPass(String login, String pass) {
-        for (Entry o : entryList){
-            if(o.login.equals(login) && o.pass.equals(pass)) return o.nick;
+    public String getNickByLoginPass(String login, String pass) throws SQLException {
+        addEntryFromDB(login, pass);
+        for (DataBaseEntity o : entityList){
+            if(o.getLogin().equals(login) && o.getPass().equals(pass)) return o.getNick();
         }
         return null;
     }
