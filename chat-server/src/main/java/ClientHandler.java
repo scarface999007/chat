@@ -1,7 +1,11 @@
+import javafx.application.Platform;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ClientHandler {
     private MyServer myServer;
@@ -10,6 +14,8 @@ public class ClientHandler {
     DataInputStream in;
     DataOutputStream out;
     private boolean isAuthOk = false;
+    private static final int TIMEOUT = 120 * 1000;
+    //private static final int TIMEOUT = 5000;
 
     ClientHandler(MyServer myServer, Socket socket) throws IOException {
         try {
@@ -38,10 +44,34 @@ public class ClientHandler {
     }
 
     public void authentication() throws IOException {
+        Timer timer = new Timer(true);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try{
+                    synchronized (this){
+                        if(name.equals("")) {
+                            System.out.println("TIME OUT");
+                            sendMsg("/end");
+                            Thread.sleep(100);
+                            in.close();
+                            out.close();
+                            socket.close();
+                        }
+                    }
+                } catch (InterruptedException | IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }, TIMEOUT);
         while (true){
+
             String str = in.readUTF();
             if(str.equals("/end")){
                 sendMsg("/end");
+                break;
+            }
+            if(str.equals("/closeSocket")){
                 break;
             }
             if(str.startsWith("/auth")) {

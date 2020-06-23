@@ -1,3 +1,4 @@
+/*
 import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -12,6 +13,7 @@ import javafx.scene.input.KeyEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -47,16 +49,6 @@ public class Controller implements Initializable {
                     e.printStackTrace();
                 }
 
-            }
-        }
-    }
-
-    public void getClientsNamesReq(){
-        if(!socket.isClosed()){
-            try {
-                out.writeUTF("/getClientNames");
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -150,7 +142,8 @@ public class Controller implements Initializable {
         out.flush();
     }
 
-    public void closeConnection(){
+    public void closeConnection() throws IOException {
+        out.writeUTF("/closeSocket");
         try {
             in.close();
             out.close();
@@ -160,3 +153,73 @@ public class Controller implements Initializable {
         }
     }
 }
+*/
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+import javafx.stage.WindowEvent;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.ResourceBundle;
+
+public class ControllerChat implements Initializable {
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat();
+    @FXML
+    public ListView<String> listViewMessage;
+    @FXML
+    public ListView<String> listViewContact;
+
+    @FXML
+    private javafx.scene.control.Button closeButton;
+
+    public TextField textField;
+
+    ChatConnection chatConnection = ChatConnection.getInstance();
+
+
+    public void send(ActionEvent actionEvent) {
+        if(!textField.getText().isEmpty()){
+            chatConnection.sendMessage(textField.getText());
+            listViewMessage.getItems().add(dateFormat.format(new Date()) + ": " + textField.getText());
+            textField.setText("");
+        }
+    }
+
+    public void keyPressed(KeyEvent keyEvent) {
+        if(keyEvent.getCode().getName().equals("Enter")){
+            if(!textField.getText().isEmpty()){
+                chatConnection.sendMessage(textField.getText());
+                listViewMessage.getItems().add(dateFormat.format(new Date()) + ": " + textField.getText());
+                textField.setText("");
+            }
+        }
+    }
+
+    private final javafx.event.EventHandler<WindowEvent> closeEventHandler = new javafx.event.EventHandler<WindowEvent>() {
+        @Override
+        public void handle(WindowEvent event) {
+            chatConnection.closeConnection();
+            System.exit(1);
+        }
+    };
+
+    public javafx.event.EventHandler<WindowEvent> getCloseEventHandler() {
+        return closeEventHandler;
+    }
+
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        //openConnection();
+        listViewMessage.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        System.out.println("INITIALIZE");
+    }
+}
+
