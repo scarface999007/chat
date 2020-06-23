@@ -20,6 +20,8 @@ public class ChatConnection {
     private Socket socket = null;
     private ControllerChat controllerChat;
     SimpleDateFormat dateFormat = new SimpleDateFormat();
+    private LogChat logChat;
+    private String name;
 
     private static ChatConnection instance;
 
@@ -94,8 +96,20 @@ public class ChatConnection {
                             Thread.sleep(1000);
                             closeConnection();
                         }
+                        if(msgFromServer.startsWith("/authok")){
+                            String[] parts = msgFromServer.split("\\s");
+                            name = parts[1];
+                            if(logChat == null){
+                                logChat = new LogChat(name);
+                            }
+                            if(logChat.read() != null){
+                                controllerChat.listViewMessage.getItems().addAll(logChat.read());
+                            }
+
+                        }
                         updateContactList(msgFromServer);
                         if(!msgFromServer.startsWith("/clients")) {
+                            logChat.write(dateFormat.format(new Date()) + ": " + msgFromServer);
                             controllerChat.listViewMessage.getItems().add(dateFormat.format(new Date()) + ": " + msgFromServer);
                         }
                     }
@@ -106,11 +120,13 @@ public class ChatConnection {
                         String msgFromServer = in.readUTF();
                         updateContactList(msgFromServer);
                         if(msgFromServer.equalsIgnoreCase("/end")){
+                            logChat.write(dateFormat.format(new Date()) + ": " + msgFromServer);
                             closeSocket();
                             Platform.exit();
                             break;
                         }
                         if(!msgFromServer.startsWith("/clients")) {
+                            logChat.write(dateFormat.format(new Date()) + ": " + msgFromServer);
                             controllerChat.listViewMessage.getItems().add(dateFormat.format(new Date()) + ": " + msgFromServer);
                         }
                     }
@@ -137,6 +153,9 @@ public class ChatConnection {
     public void sendMessage(String text){
         if(!socket.isClosed()){
             try {
+                if(logChat != null){
+                    logChat.write(dateFormat.format(new Date()) + ": " + text);
+                }
                 out.writeUTF(text);
                 out.flush();
             } catch (IOException e) {
